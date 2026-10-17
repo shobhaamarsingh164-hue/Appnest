@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AppNest - App Store</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #0b1020;
+    color: white;
+}
+
+header {
+    background: #121a2d;
+    padding: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid #293550;
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: bold;
+    color: #8b7aff;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-weight: bold;
+}
+
+.upload-btn {
+    background: #7657ff;
+    color: white;
+}
+
+.search-box {
+    padding: 12px;
+    border-radius: 10px;
+    background: #202a40;
+    border: 1px solid #35415a;
+    color: white;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+.hero {
+    background: linear-gradient(135deg, #29245a, #142d48);
+    padding: 40px 25px;
+    border-radius: 20px;
+    margin: 20px 0;
+}
+
+.hero h1 {
+    font-size: 38px;
+    margin-bottom: 12px;
+}
+
+.hero p {
+    color: #c2cbe0;
+    margin-bottom: 20px;
+}
+
+h2 {
+    margin: 25px 0 15px;
+}
+
+.categories {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+.category {
+    background: #202a40;
+    color: white;
+    white-space: nowrap;
+}
+
+.category.active {
+    background: #7657ff;
+}
+
+.apps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.app-card {
+    background: #151f34;
+    border: 1px solid #293550;
+    border-radius: 16px;
+    padding: 16px;
+    overflow-wrap: anywhere;
+}
+
+.app-icon {
+    font-size: 35px;
+    margin-bottom: 10px;
+}
+
+.app-card h3 {
+    margin-bottom: 8px;
+}
+
+.app-card p {
+    font-size: 13px;
+    color: #b7c2d7;
+    margin: 10px 0;
+}
+
+.tag {
+    display: inline-block;
+    background: #292550;
+    color: #c9c1ff;
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 12px;
+    margin: 5px 0;
+}
+
+.download-btn {
+    display: block;
+    width: 100%;
+    margin-top: 12px;
+    background: #263b5d;
+    color: white;
+}
+
+dialog {
+    width: min(500px, 94%);
+    margin: auto;
+    border: 1px solid #35415a;
+    border-radius: 18px;
+    padding: 22px;
+    background: #151f34;
+    color: white;
+}
+
+dialog::backdrop {
+    background: #000b;
+}
+
+dialog h2 {
+    margin: 0 0 20px;
+}
+
+label {
+    display: block;
+    margin: 14px 0 6px;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    background: #0b1020;
+    color: white;
+    border: 1px solid #35415a;
+    border-radius: 9px;
+}
+
+.submit-btn {
+    width: 100%;
+    background: #7657ff;
+    color: white;
+    margin-top: 18px;
+}
+
+.close-btn {
+    background: #303b52;
+    color: white;
+    float: right;
+}
+
+#status {
+    margin-top: 12px;
+    color: #facc15;
+    font-size: 14px;
+}
+
+footer {
+    margin-top: 40px;
+    padding: 25px;
+    text-align: center;
+    color: #9caac2;
+    border-top: 1px solid #293550;
+}
+
+@media (max-width: 850px) {
+    .apps {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 450px) {
+    .container {
+        padding: 12px;
+    }
+
+    .hero h1 {
+        font-size: 29px;
+    }
+
+    .apps {
+        gap: 9px;
+    }
+
+    .app-card {
+        padding: 12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">✦ AppNest</div>
+    <button class="upload-btn" onclick="openUpload()">
+        + Upload App
+    </button>
+</header>
+
+<div class="container">
+
+    <section class="hero">
+        <h1>Discover Your Next Favorite App</h1>
+        <p>Explore games, tools, entertainment apps and more.</p>
+        <button class="upload-btn" onclick="openUpload()">
+            Upload Your APK
+        </button>
+    </section>
+
+    <input
+        type="search"
+        id="search"
+        class="search-box"
+        placeholder="Search apps, games, tools..."
+        oninput="renderApps()"
+    >
+
+    <h2>Categories</h2>
+    <div class="categories" id="categories"></div>
+
+    <h2 id="sectionTitle">Popular Apps</h2>
+    <div class="apps" id="apps"></div>
+
+</div>
+
+<footer>
+    AppNest © 2026 — Discover apps in one place.
+</footer>
+
+<dialog id="uploadDialog">
+    <button class="close-btn" onclick="closeUpload()">✕</button>
+
+    <h2>Upload Your App</h2>
+
+    <form id="uploadForm">
+        <label for="appName">App Name</label>
+        <input id="appName" required maxlength="70"
+               placeholder="Enter app name">
+
+        <label for="appCategory">Category</label>
+        <select id="appCategory" required></select>
+
+        <label for="appVersion">Version</label>
+        <input id="appVersion" placeholder="1.0.0">
+
+        <label for="appDescription">Description</label>
+        <textarea id="appDescription" rows="3"
+                  placeholder="Describe your app"></textarea>
+
+        <label for="apkFile">Select APK File</label>
+        <input id="apkFile" type="file"
+               accept=".apk" required>
+
+        <div id="status"></div>
+
+        <button type="submit" class="submit-btn">
+            Upload APK
+        </button>
+    </form>
+</dialog>
+
+<script>
+const categoryList = [
+    "All",
+    "Games",
+    "Apps",
+    "Tools",
+    "Productivity",
+    "Entertainment",
+    "Education",
+    "Social",
+    "Photography",
+    "Music & Audio",
+    "Security"
+];
+
+const sampleApps = [
+    {
+        name: "Pixel Adventure",
+        category: "Games",
+        version: "1.2.0",
+        description: "Explore a colorful arcade adventure.",
+        icon: "🎮"
+    },
+    {
+        name: "Focus Space",
+        category: "Productivity",
+        version: "2.0.0",
+        description: "Organize your daily tasks.",
+        icon: "🎯"
+    },
+    {
+        name: "Quick Tools",
+        category: "Tools",
+        version: "1.4.0",
+        description: "Useful everyday mobile utilities.",
+        icon: "🛠️"
+    },
+    {
+        name: "Learn Smart",
+        category: "Education",
+        version: "3.1.0",
+        description: "Discover new learning resources.",
+        icon: "📚"
+    },
+    {
+        name: "Tune Flow",
+        category: "Music & Audio",
+        version: "1.0.5",
+        description: "Explore your favorite audio.",
+        icon: "🎵"
+    },
+    {
+        name: "Snap Studio",
+        category: "Photography",
+        version: "2.3.0",
+        description: "Creative photography tools.",
+        icon: "📷"
+    }
+];
+
+let selectedCategory = "All";
+let appsList = [...sampleApps];
+
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[char]);
+}
+
+function createCategories() {
+    const box = document.getElementById("categories");
+
+    box.innerHTML = categoryList.map(category => `
+        <button
+            class="category ${category === selectedCategory ? "active" : ""}"
+            data-category="${escapeHTML(category)}">
+            ${category === "All" ? "✦ " : ""}${escapeHTML(category)}
+        </button>
+    `).join("");
+
+    box.querySelectorAll("button").forEach(button => {
+        button.addEventListener("click", () => {
+            selectedCategory = button.dataset.category;
+            createCategories();
+            renderApps();
+        });
+    });
+
+    document.getElementById("appCategory").innerHTML =
+        categoryList.filter(c => c !== "All").map(c =>
+            `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`
+        ).join("");
+}
+
+function renderApps() {
+    const query = document.getElementById("search")
+        .value.trim().toLowerCase();
+
+    const filtered = appsList.filter(app => {
+        const categoryMatches =
+            selectedCategory === "All" ||
+            app.category === selectedCategory;
+
+        const searchMatches =
+            `${app.name} ${app.category} ${app.description}`
+            .toLowerCase().includes(query);
+
+        return categoryMatches && searchMatches;
+    });
+
+    document.getElementById("sectionTitle").textContent =
+        selectedCategory === "All" ? "Popular Apps" : selectedCategory;
+
+    const box = document.getElementById("apps");
+
+    if (!filtered.length) {
+        box.innerHTML =
+            '<p style="color:#a7b2c8">No apps found.</p>';
+        return;
+    }
+
+    box.innerHTML = filtered.map(app => `
+        <article class="app-card">
+            <div class="app-icon">${escapeHTML(app.icon || "📦")}</div>
+            <h3>${escapeHTML(app.name)}</h3>
+            <small>Version ${escapeHTML(app.version || "1.0.0")}</small>
+            <p>${escapeHTML(app.description || "No description")}</p>
+            <span class="tag">${escapeHTML(app.category)}</span>
+            ${
+                app.downloadUrl
+                ? `<a href="${escapeHTML(app.downloadUrl)}"
+                      class="download-btn"
+                      style="text-align:center;text-decoration:none;padding:12px"
+                      target="_blank" rel="noopener">Download</a>`
+                : `<button class="download-btn" disabled>Demo App</button>`
+            }
+        </article>
+    `).join("");
+}
+
+function openUpload() {
+    document.getElementById("status").textContent = "";
+    document.getElementById("uploadDialog").showModal();
+}
+
+function closeUpload() {
+    document.getElementById("uploadDialog").close();
+}
+
+document.getElementById("uploadForm").addEventListener(
+    "submit", async function(event) {
+        event.preventDefault();
+
+        const file = document.getElementById("apkFile").files[0];
+        const status = document.getElementById("status");
+
+        if (!file) {
+            status.textContent = "Please select an APK file.";
+            return;
+        }
+
+        if (!file.name.toLowerCase().endsWith(".apk")) {
+            status.textContent = "Please select a valid APK file.";
+            return;
+        }
+
+        status.textContent =
+            "Upload backend is not connected yet. Connect your API to save APK files.";
+
+        /*
+        IMPORTANT:
+        This demo does not upload files to Storj.
+        A secure backend/API endpoint must be connected here.
+        Never place secret keys in this HTML file.
+        */
+    }
+);
+
+createCategories();
+renderApps();
+</script>
+
+</body>
+</html>
